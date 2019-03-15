@@ -80,7 +80,8 @@ module.exports = function(
   appName,
   verbose,
   originalDirectory,
-  template
+  template,
+  multiple
 ) {
   const ownPath = path.dirname(
     require.resolve(path.join(__dirname, '..', 'package.json'))
@@ -99,6 +100,7 @@ module.exports = function(
     build: 'react-scripts build',
     test: 'react-scripts test',
     eject: 'react-scripts eject',
+    buildjenkins: "react-scripts build jenkins"
   };
 
   // Setup the eslint config
@@ -125,7 +127,7 @@ module.exports = function(
   // Copy the files for the user
   const templatePath = template
     ? path.resolve(originalDirectory, template)
-    : path.join(ownPath, useTypeScript ? 'template-typescript' : 'template');
+    : path.join(ownPath, useTypeScript ? 'template-typescript' : (multiple ? 'template-multiple' : 'template'));
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
   } else {
@@ -134,7 +136,7 @@ module.exports = function(
     );
     return;
   }
-
+  console.log(templatePath, multiple)
   // Rename gitignore after the fact to prevent npm from renaming it to .npmignore
   // See: https://github.com/npm/npm/issues/1862
   try {

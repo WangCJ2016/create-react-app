@@ -19,6 +19,20 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const envPublicUrl = process.env.PUBLIC_URL;
 
+const array = appDirectory.split(path.sep);
+const _name = array[array.length - 4];
+const _name_muliple = array[array.length - 2];
+if (
+  _name_muliple !== 'pages' &&
+  !(_name === 'wetime-web' || _name === 'wetime-activity' || _name === 'fe-fancylife' || _name === 'workspace')
+) {
+  throw Error(
+    '请在wetime-web/wetime-activity/fe-fancylife库里使用，或者在wetime-web/src/app/下创建项目,或者在wetime-web下多入口项目下pages下创建'
+  );
+}
+const objectName = array[array.length - 1];
+const repositoryName = array[array.length - 2];
+
 function ensureSlash(inputPath, needsSlash) {
   const hasSlash = inputPath.endsWith('/');
   if (hasSlash && !needsSlash) {
@@ -73,11 +87,13 @@ const resolveModule = (resolveFn, filePath) => {
   return resolveFn(`${filePath}.js`);
 };
 
+
+const isJenkins = process.argv.slice(2)[0] === 'jenkins' //是否是jenkins打包
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
-  appBuild: resolveApp('build'),
+  appBuild: !isJenkins ?  resolveApp(`../../../dist/${repositoryName}/${objectName}/`):resolveApp(`../../../dist/${objectName}/`),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveModule(resolveApp, 'src/index'),
@@ -89,7 +105,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: getServedPath(resolveApp('package.json')),
+  servedPath: !isJenkins ? `/h5/${repositoryName}/${objectName}/` : `/fancylife/${objectName}/`,
 };
 
 // @remove-on-eject-begin
@@ -99,7 +115,7 @@ const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
-  appBuild: resolveApp('build'),
+  appBuild: !isJenkins ?  resolveApp(`../../../dist/${repositoryName}/${objectName}/`):resolveApp(`../../../dist/${objectName}/`),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveModule(resolveApp, 'src/index'),
@@ -111,7 +127,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: getServedPath(resolveApp('package.json')),
+  servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : resolveApp(`/fancylife/${objectName}/`) + '/',
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
@@ -133,7 +149,7 @@ if (
   module.exports = {
     dotenv: resolveOwn('template/.env'),
     appPath: resolveApp('.'),
-    appBuild: resolveOwn('../../build'),
+    appBuild: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : resolveApp(`/fancylife/${objectName}/`) + '/',
     appPublic: resolveOwn('template/public'),
     appHtml: resolveOwn('template/public/index.html'),
     appIndexJs: resolveModule(resolveOwn, 'template/src/index'),
@@ -145,7 +161,7 @@ if (
     proxySetup: resolveOwn('template/src/setupProxy.js'),
     appNodeModules: resolveOwn('node_modules'),
     publicUrl: getPublicUrl(resolveOwn('package.json')),
-    servedPath: getServedPath(resolveOwn('package.json')),
+    servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : resolveApp(`/fancylife/${objectName}/`) + '/',
     // These properties only exist before ejecting:
     ownPath: resolveOwn('.'),
     ownNodeModules: resolveOwn('node_modules'),

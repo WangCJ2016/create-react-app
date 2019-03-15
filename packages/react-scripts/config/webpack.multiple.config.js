@@ -25,7 +25,7 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
+const getCSSModuleLocalIdent = require('./utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
@@ -38,6 +38,9 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 const postcssAspectRatioMini = require('postcss-aspect-ratio-mini'); //
 const postcssPxToViewport = require('postcss-px-to-viewport');
 const postcssViewportUnits = require('postcss-viewport-units');
+
+const { getHtmlConfig, getEntry} = require('./utils/getMultipleConfig')
+
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -141,6 +144,21 @@ module.exports = function(webpackEnv) {
     return loaders;
   };
 
+    //配置页面
+    const entryObj = getEntry(isEnvDevelopment);
+    const htmlArray = [];
+    Object.keys(entryObj).forEach(element => {
+        htmlArray.push({
+            _html: element,
+            title: '',
+            chunks: ['vendor', 'common', element]
+        })
+    })
+    let htmlPlugins = []
+    htmlArray.forEach((element) => {
+        htmlPlugins.push(new HtmlWebpackPlugin(getHtmlConfig(element._html,element.chunks, isEnvProduction)))
+    })
+
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
@@ -152,26 +170,12 @@ module.exports = function(webpackEnv) {
       : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
-    entry: [
-      // Include an alternative client for WebpackDevServer. A client's job is to
-      // connect to WebpackDevServer by a socket and get notified about changes.
-      // When you save a file, the client will either apply hot updates (in case
-      // of CSS changes), or refresh the page (in case of JS changes). When you
-      // make a syntax error, this client will display a syntax error overlay.
-      // Note: instead of the default WebpackDevServer client, we use a custom one
-      // to bring better experience for Create React App users. You can replace
-      // the line below with these two lines if you prefer the stock client:
-      // require.resolve('webpack-dev-server/client') + '?/',
-      // require.resolve('webpack/hot/dev-server'),
-      isEnvDevelopment &&
-        require.resolve('react-dev-utils/webpackHotDevClient'),
-      // Finally, this is your app's code:
-      paths.appIndexJs,
-      // We include the app code last so that if there is a runtime error during
-      // initialization, it doesn't blow up the WebpackDevServer client, and
-      // changing JS code would still trigger a refresh.
-    ].filter(Boolean),
+    entry: entryObj,
+
     output: {
+        // path: path.resolve(__dirname, '../dist'),
+        // // 打包多出口文件
+        // filename: './js/[name].bundle.js'
       // The build folder.
       path: isEnvProduction ? paths.appBuild : undefined,
       // Add /* filename */ comments to generated require()s in the output.
@@ -180,7 +184,7 @@ module.exports = function(webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].bundle.js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
@@ -329,8 +333,8 @@ module.exports = function(webpackEnv) {
               options: {
                 formatter: require.resolve('react-dev-utils/eslintFormatter'),
                 eslintPath: require.resolve('eslint'),
-                // @remove-on-eject-begin
-                baseConfig: {
+                 // @remove-on-eject-begin
+                 baseConfig: {
                   extends: [require.resolve('eslint-config-react-app')],
                 },
                 ignore: false,
@@ -368,27 +372,27 @@ module.exports = function(webpackEnv) {
                 customize: require.resolve(
                   'babel-preset-react-app/webpack-overrides'
                 ),
-                // @remove-on-eject-begin
-                babelrc: false,
-                configFile: false,
-                presets: [require.resolve('babel-preset-react-app')],
-                // Make sure we have a unique cache identifier, erring on the
-                // side of caution.
-                // We remove this when the user ejects because the default
-                // is sane and uses Babel options. Instead of options, we use
-                // the react-scripts and babel-preset-react-app versions.
-                cacheIdentifier: getCacheIdentifier(
-                  isEnvProduction
-                    ? 'production'
-                    : isEnvDevelopment && 'development',
-                  [
-                    'babel-plugin-named-asset-import',
-                    'babel-preset-react-app',
-                    'react-dev-utils',
-                    'react-scripts',
-                  ]
-                ),
-                // @remove-on-eject-end
+                 // @remove-on-eject-begin
+                 babelrc: false,
+                 configFile: false,
+                 presets: [require.resolve('babel-preset-react-app')],
+                 // Make sure we have a unique cache identifier, erring on the
+                 // side of caution.
+                 // We remove this when the user ejects because the default
+                 // is sane and uses Babel options. Instead of options, we use
+                 // the react-scripts and babel-preset-react-app versions.
+                 cacheIdentifier: getCacheIdentifier(
+                   isEnvProduction
+                     ? 'production'
+                     : isEnvDevelopment && 'development',
+                   [
+                     'babel-plugin-named-asset-import',
+                     'babel-preset-react-app',
+                     'react-dev-utils',
+                     'react-scripts',
+                   ]
+                 ),
+                 // @remove-on-eject-end
                 plugins: [
                   [
                     require.resolve('babel-plugin-named-asset-import'),
@@ -399,7 +403,8 @@ module.exports = function(webpackEnv) {
                         },
                       },
                     },
-                  ],[
+                  ],
+                  [
                     require.resolve('babel-plugin-import'), {
                       libraryName: 'antd-mobile',
                       style: "css"
@@ -432,8 +437,8 @@ module.exports = function(webpackEnv) {
                 ],
                 cacheDirectory: true,
                 cacheCompression: isEnvProduction,
-                // @remove-on-eject-begin
-                cacheIdentifier: getCacheIdentifier(
+                 // @remove-on-eject-begin
+                 cacheIdentifier: getCacheIdentifier(
                   isEnvProduction
                     ? 'production'
                     : isEnvDevelopment && 'development',
@@ -483,7 +488,7 @@ module.exports = function(webpackEnv) {
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
             },
-            // Opt-in support for LESS (using .less extensions).
+             // Opt-in support for LESS (using .less extensions).
             // By default we support LESS Modules with the
             // extensions .module.less
             {
@@ -502,10 +507,10 @@ module.exports = function(webpackEnv) {
               // See https://github.com/webpack/webpack/issues/6571
               sideEffects: true,
             },
-             // Adds support for CSS Modules, but using LESS
+            // Adds support for CSS Modules, but using LESS
             // using the extension .module.less
             {
-              test: lessModuleRegex,
+              test: /\.module.less$/,
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
@@ -573,31 +578,7 @@ module.exports = function(webpackEnv) {
     },
     plugins: [
       // Generates an `index.html` file with the <script> injected.
-      new HtmlWebpackPlugin(
-        Object.assign(
-          {},
-          {
-            inject: true,
-            template: paths.appHtml,
-          },
-          isEnvProduction
-            ? {
-                minify: {
-                  removeComments: true,
-                  collapseWhitespace: true,
-                  removeRedundantAttributes: true,
-                  useShortDoctype: true,
-                  removeEmptyAttributes: true,
-                  removeStyleLinkTypeAttributes: true,
-                  keepClosingSlash: true,
-                  minifyJS: true,
-                  minifyCSS: true,
-                  minifyURLs: true,
-                },
-              }
-            : undefined
-        )
-      ),
+      ...htmlPlugins,
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       isEnvProduction &&
@@ -679,6 +660,7 @@ module.exports = function(webpackEnv) {
           tsconfig: paths.appTsConfig,
           reportFiles: [
             '**',
+            '!**/*.json',
             '!**/__tests__/**',
             '!**/?(*.)(spec|test).*',
             '!**/src/setupProxy.*',
@@ -706,3 +688,5 @@ module.exports = function(webpackEnv) {
     performance: false,
   };
 };
+
+

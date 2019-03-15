@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta name="theme-color" content="#000000" />
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="//static02.babytreeimg.com/img/common/favicon.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000">
+    <meta name="format-detection" content="telephone=no"/>
     <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -22,11 +20,36 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Babytree</title>
+    <style>
+     img { 
+          content: normal !important; 
+     }
+    </style>
+   <!-- 微信分享 -->
+   <script src="http://static02.babytreeimg.com/img/bca/share/1.1.0/share.min.js"></script>
+   <!-- 监控 -->
+   <!-- <script src="//static02.babytreeimg.com/img/bca/monitor/2.0.1/bbtMonitor.min.js"></script> -->
+   <!-- <script src='./monitor.js'></script> -->
+   <!-- <script>
+     // 这句一定要在onload触发之前调用
+     bbtMonitor.setProjectId("wetime").track()
+   </script> -->
+   <script>
+      //  window.bbtShare.setShareInfo({
+      //      app_id: 'sharemp', // 宝宝树平台生成的id
+      //      title: '宝宝树',
+      //      content: '全球最大的母婴孕育社区',
+      //      url: 'http://m.babytree.com',
+      //      imgUrl: 'http://img01.babytreeimg.com/img/mg/dist/project/wetime/img/logo.png'
+      //  })
+   </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root">laodding</div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -37,5 +60,22 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script src="//g.alicdn.com/fdilab/lib3rd/viewport-units-buggyfill/0.6.2/??viewport-units-buggyfill.hacks.min.js,viewport-units-buggyfill.min.js"></script>
+    <script>
+      window.onload = function () {
+        window.viewportUnitsBuggyfill.init({
+          hacks: window.viewportUnitsBuggyfillHacks
+        });
+      }
+    </script>
+    
+    <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
+    <script>
+      if ('addEventListener' in document) {
+        document.addEventListener('DOMContentLoaded', function() {
+          FastClick.attach(document.body);
+        }, false);
+      }
+    </script>
   </body>
 </html>
