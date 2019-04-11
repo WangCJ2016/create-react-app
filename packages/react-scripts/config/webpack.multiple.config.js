@@ -127,7 +127,12 @@ module.exports = function(webpackEnv) {
               mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
               exclude: /(\/|\\)(node_modules)(\/|\\)/,
             }),
-            postcssViewportUnits({}),
+            // 过滤手动写content 导致的warn
+            postcssViewportUnits({
+              filterRule: rule => {
+                return rule.nodes.findIndex(i => i.prop === 'content') === -1
+              }
+            }),
           ],
           sourceMap: isEnvProduction && shouldUseSourceMap,
         },
@@ -262,6 +267,11 @@ module.exports = function(webpackEnv) {
                 }
               : false,
           },
+          cssProcessorPluginOptions: {
+            preset: ['default', { 
+              mergeLonghand: false  // 防止合并相同属性
+            }],
+          }
         }),
       ],
       // Automatically split vendor and commons

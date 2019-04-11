@@ -124,7 +124,12 @@ module.exports = function(webpackEnv) {
               mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
               exclude: /(\/|\\)(node_modules)(\/|\\)/,
             }),
-            postcssViewportUnits({}),
+            // 过滤手动写content 导致的warn
+            postcssViewportUnits({
+              filterRule: rule => {
+                return rule.nodes.findIndex(i => i.prop === 'content') === -1
+              }
+            }),
           ],
           sourceMap: isEnvProduction && shouldUseSourceMap,
         },
@@ -163,6 +168,7 @@ module.exports = function(webpackEnv) {
       // the line below with these two lines if you prefer the stock client:
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
+      require.resolve('react-app-polyfill/jsdom'),
       isEnvDevelopment &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       // Finally, this is your app's code:
@@ -258,6 +264,11 @@ module.exports = function(webpackEnv) {
                 }
               : false,
           },
+          cssProcessorPluginOptions: {
+            preset: ['default', { 
+              mergeLonghand: false  // 防止合并相同属性
+            }],
+          }
         }),
       ],
       // Automatically split vendor and commons
@@ -335,6 +346,15 @@ module.exports = function(webpackEnv) {
                 },
                 ignore: false,
                 useEslintrc: false,
+                plugins: [
+                  // ...
+                  "react-hooks"
+                ],
+                "rules": {
+                  // ...
+                  "react-hooks/rules-of-hooks": "error",
+                  "react-hooks/exhaustive-deps": "warn"
+                }
                 // @remove-on-eject-end
               },
               loader: require.resolve('eslint-loader'),

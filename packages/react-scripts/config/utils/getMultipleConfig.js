@@ -17,6 +17,7 @@ function getEntry(isEnvDevelopment) {
             if(isEnvDevelopment) {
                 eArr.push(require.resolve('react-dev-utils/webpackHotDevClient'),)
             }
+            eArr.push(require.resolve('react-app-polyfill/jsdom'),)
             entry[n] = eArr;
         });
     return entry;
@@ -24,20 +25,7 @@ function getEntry(isEnvDevelopment) {
 
 // 获取html-webpack-plugin参数的方法
 function getHtmlConfig (name, chunks,isEnvProduction) {
-    // return {
-    //     template: `./src/pages/${name}/index.html`,
-    //     filename: `${name}.html`,
-    //     // favicon: './favicon.ico',
-    //     // title: title,
-    //     inject: true,
-    //     hash: true, //开启hash  ?[hash]
-    //     chunks: chunks,
-    //     minify: process.env.NODE_ENV !== "production" ? false : {
-    //         removeComments: true, //移除HTML中的注释
-    //         collapseWhitespace: true, //折叠空白区域 也就是压缩代码
-    //         removeAttributeQuotes: true, //去除属性引用
-    //     },
-    // };
+    
     return Object.assign(
               {},
               {
