@@ -14,30 +14,33 @@ const webpack = require('webpack');
 const resolve = require('resolve');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');   // 区分大小写路劲plugin
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');    // index.html中注入环境变量
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin');                    // 生成离线应用pwa资源
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
+const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');   // css-loader 生成classname的规则
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
-const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
-const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');     // src 未找到资源提供信息
+const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');  // 如果是ts项目会先检测是否符合要求
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 // @remove-on-eject-begin
-const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
+const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');   // babel-laoder缓存相关
 // @remove-on-eject-end
 
-const postcssAspectRatioMini = require('postcss-aspect-ratio-mini'); //
+const postcssAspectRatioMini = require('postcss-aspect-ratio-mini');   // 使用css aspect-ratio属性 生成一个固定宽高比元素
 const postcssPxToViewport = require('postcss-px-to-viewport');
-const postcssViewportUnits = require('postcss-viewport-units');
+
+ // 适配核心插件，生成content内容，Viewport Units Buggyfill，是一个能让vw，wh在低版本浏览器上运行的Buggyfill，
+ // 做法是判断浏览器不支持vw，就将相应的content里的内容插入对应的类
+const postcssViewportUnits = require('postcss-viewport-units');   
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -149,7 +152,7 @@ module.exports = function(webpackEnv) {
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
-    bail: isEnvProduction,
+    bail: isEnvProduction,             // 编译过程中失败，生成环境下立即跳出，dev下报错并等待
     devtool: isEnvProduction
       ? shouldUseSourceMap
         ? 'source-map'
@@ -168,7 +171,7 @@ module.exports = function(webpackEnv) {
       // the line below with these two lines if you prefer the stock client:
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
-      require.resolve('react-app-polyfill/jsdom'),
+      require.resolve('./polyfills'),
       isEnvDevelopment &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       // Finally, this is your app's code:
@@ -264,6 +267,7 @@ module.exports = function(webpackEnv) {
                 }
               : false,
           },
+          // cssnano 做css代码 tree shaking
           cssProcessorPluginOptions: {
             preset: ['default', { 
               mergeLonghand: false  // 防止合并相同属性
@@ -280,7 +284,7 @@ module.exports = function(webpackEnv) {
       },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      runtimeChunk: true,   // 优化持久化缓存的, runtime 指的是 webpack 的运行环境(具体作用就是模块解析, 加载) 和 模块信息清单, 独立打包
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
@@ -410,16 +414,17 @@ module.exports = function(webpackEnv) {
                 ),
                 // @remove-on-eject-end
                 plugins: [
+                  // [
+                  //   require.resolve('babel-plugin-named-asset-import'),
+                  //   {
+                  //     loaderMap: {
+                  //       svg: {
+                  //         ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
+                  //       },
+                  //     },
+                  //   },
+                  // ],
                   [
-                    require.resolve('babel-plugin-named-asset-import'),
-                    {
-                      loaderMap: {
-                        svg: {
-                          ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
-                        },
-                      },
-                    },
-                  ],[
                     require.resolve('babel-plugin-import'), {
                       libraryName: 'antd-mobile',
                       style: "css"
@@ -569,6 +574,14 @@ module.exports = function(webpackEnv) {
                 },
                 'sass-loader'
               ),
+            },
+            // svg sprite
+            {
+              test: /\.svg$/,
+              use: [
+                'svg-sprite-loader',
+                'svgo-loader'
+              ],
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.

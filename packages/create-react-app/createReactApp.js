@@ -75,6 +75,7 @@ const program = new commander.Command(packageJson.name)
     '--scripts-version <alternative-package>',
     'use a non-standard version of react-scripts'
   )
+  .option('--multiple', 'use multiple module create object')
   .option('--use-npm')
   .option('--use-pnp')
   .option('--typescript')
@@ -180,7 +181,8 @@ createApp(
   program.useNpm,
   program.usePnp,
   program.typescript,
-  hiddenProgram.internalTestingTemplate
+  hiddenProgram.internalTestingTemplate,
+  program.multiple,
 );
 
 function createApp(
@@ -190,7 +192,8 @@ function createApp(
   useNpm,
   usePnp,
   useTypescript,
-  template
+  template,
+  multiple
 ) {
   const root = path.resolve(name);
   const appName = path.basename(root);
@@ -293,7 +296,8 @@ function createApp(
     template,
     useYarn,
     usePnp,
-    useTypescript
+    useTypescript,
+    multiple
   );
 }
 
@@ -377,7 +381,8 @@ function run(
   template,
   useYarn,
   usePnp,
-  useTypescript
+  useTypescript,
+  multiple
 ) {
   const packageToInstall = getInstallPackage(version, originalDirectory);
   const allDependencies = ['react', 'react-dom', packageToInstall];
@@ -432,7 +437,7 @@ function run(
           cwd: process.cwd(),
           args: nodeArgs,
         },
-        [root, appName, verbose, originalDirectory, template],
+        [root, appName, verbose, originalDirectory, template, multiple],
         `
         var init = require('${packageName}/scripts/init.js');
         init.apply(null, JSON.parse(process.argv[1]));

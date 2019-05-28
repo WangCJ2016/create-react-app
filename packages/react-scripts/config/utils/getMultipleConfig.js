@@ -13,11 +13,11 @@ function getEntry(isEnvDevelopment) {
             var n = name.slice(start, end);
             n = n.slice(0, n.lastIndexOf('/')); //保存各个组件的入口 
             n = n.split('/')[1];
+            eArr.push(require.resolve('../polyfills'))
             eArr.push(name);
             if(isEnvDevelopment) {
                 eArr.push(require.resolve('react-dev-utils/webpackHotDevClient'),)
             }
-            eArr.push(require.resolve('react-app-polyfill/jsdom'),)
             entry[n] = eArr;
         });
     return entry;

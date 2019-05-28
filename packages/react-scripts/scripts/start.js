@@ -41,9 +41,10 @@ const clearConsole = require('react-dev-utils/clearConsole');
 const {
   choosePort,
   createCompiler,
-  prepareProxy,
   prepareUrls,
 } = require('react-dev-utils/WebpackDevServerUtils');
+const prepareProxy = require('./utils/prepareProxy')
+
 const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
 const configFactory = require('../config/webpack.config');
