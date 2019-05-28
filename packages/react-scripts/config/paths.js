@@ -105,7 +105,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: !isJenkins ? `/h5/${repositoryName}/${objectName}/` : `/fancylife/${objectName}/`,
+  servedPath: !isJenkins ? `/h5/${repositoryName}/${objectName}/` : 'https://static.quzhongcaocdn.cn',
 };
 
 // @remove-on-eject-begin
@@ -127,7 +127,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : resolveApp(`/fancylife/${objectName}/`) + '/',
+  servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : 'https://static.quzhongcaocdn.cn',
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
@@ -161,7 +161,7 @@ if (
     proxySetup: resolveOwn('template/src/setupProxy.js'),
     appNodeModules: resolveOwn('node_modules'),
     publicUrl: getPublicUrl(resolveOwn('package.json')),
-    servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : resolveApp(`/fancylife/${objectName}/`) + '/',
+    servedPath: !isJenkins ? resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/' : 'https://static.quzhongcaocdn.cn',
     // These properties only exist before ejecting:
     ownPath: resolveOwn('.'),
     ownNodeModules: resolveOwn('node_modules'),

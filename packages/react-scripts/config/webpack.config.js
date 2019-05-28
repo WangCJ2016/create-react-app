@@ -414,16 +414,16 @@ module.exports = function(webpackEnv) {
                 ),
                 // @remove-on-eject-end
                 plugins: [
-                  // [
-                  //   require.resolve('babel-plugin-named-asset-import'),
-                  //   {
-                  //     loaderMap: {
-                  //       svg: {
-                  //         ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
-                  //       },
-                  //     },
-                  //   },
-                  // ],
+                  [
+                    require.resolve('babel-plugin-named-asset-import'),
+                    {
+                      loaderMap: {
+                        svg: {
+                          ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
+                        },
+                      },
+                    },
+                  ],
                   [
                     require.resolve('babel-plugin-import'), {
                       libraryName: 'antd-mobile',
@@ -575,14 +575,14 @@ module.exports = function(webpackEnv) {
                 'sass-loader'
               ),
             },
-            // svg sprite
-            {
-              test: /\.svg$/,
-              use: [
-                'svg-sprite-loader',
-                'svgo-loader'
-              ],
-            },
+            // // svg sprite
+            // {
+            //   test: /\.svg$/,
+            //   use: [
+            //     'svg-sprite-loader',
+            //     'svgo-loader'
+            //   ],
+            // },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.
             // In production, they would get copied to the `build` folder.
