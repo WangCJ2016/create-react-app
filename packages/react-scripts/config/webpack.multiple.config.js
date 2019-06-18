@@ -283,7 +283,9 @@ module.exports = function(webpackEnv) {
       },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      runtimeChunk: 'single',  // 将runtime文件合成一份，
+      namedChunks: true,
+      namedModules: true  // 将默认的数字 id 命名规则换成路径的方式
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
@@ -612,6 +614,8 @@ module.exports = function(webpackEnv) {
       // This gives some necessary context to module not found errors, such as
       // the requesting resource.
       new ModuleNotFoundPlugin(paths.appPath),
+      // 换成使用HashedModuleIdsPlugin 插件来根据路径生成的 hash 作为 module identifier。
+      new webpack.HashedModuleIdsPlugin(),
       // Makes some environment variables available to the JS code, for example:
       // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
       // It is absolutely essential that NODE_ENV is set to production

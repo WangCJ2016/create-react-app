@@ -5,7 +5,7 @@ const glob = require("glob");
 function getEntry(isEnvDevelopment) {
     var entry = {};
     //读取src目录所有page入口
-    glob.sync(`./src/pages/**/index.js`)
+    glob.sync(`./src/pages/*/index.js`)
         .forEach(function (name) {
             var start = name.indexOf('src/') + 4,
                 end = name.length - 3;
